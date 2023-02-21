@@ -13,9 +13,8 @@ public class Matriz <T>{
     private String id;
     private T inicial;
 //    private TipoMatriz tipo;
-    private int colAmpliada;
     private static int id_char = 63;
-    
+    private Matriz<T> matrizCumulos;
     /**
      *
      * @param filas número de filas que tendrá la matriz
@@ -29,6 +28,7 @@ public class Matriz <T>{
         this.inicial = inicial;
         inicializar();
         this.id = (char) Matriz.id_char++ + "";
+        this.matrizCumulos = null;
     }
 
     /**
@@ -44,6 +44,8 @@ public class Matriz <T>{
         this.a = new Object[filas][columnas];
         this.id = id;
         this.inicial = inicial;
+        
+        this.matrizCumulos = null;
         inicializar();
     }
 
@@ -168,11 +170,20 @@ public class Matriz <T>{
         }
         return (T[]) valores.toArray();
     }
+    
+    public void  printConsole(){
+        for (int f = 0; f < filas; f++) {
+            for (int c = 0; c < columnas; c++) {
+                System.out.print(a[f][c] + ", ");
+            }
+            System.out.println("");
+        }
+    }
 
     /**
-     * imprime en consola los datos en orden y en forma de matriz
+     * imprime en consola los datos en orden y en forma de matriz usando u Hilo de ejecución
      */
-    public void printConsole() {
+    public void printConsoleParalelo() {
         Thread t = new Thread() {
             @Override
             public void run() {
@@ -226,5 +237,84 @@ public class Matriz <T>{
         return filas * columnas;
     }
 
+    
+    public Matriz insertarMatriz() {
+        var m = new Matriz<T>(this.filas + 2, this.columnas + 2, this.inicial);
+        for (int i = 1; i < filas + 1; i++) {
+            for (int j = 1; j < columnas + 1; j++) {
+                m.a[i][j] = this.a[i - 1][j - 1];
+            }
+        }
+
+        return m;
+    }
+    
+     /**
+     * busca cumulos usando la estructura de manhattan, para aplicarla en la
+     * busqueda del 4-vercino
+     *
+     * @param i fila de la celda central
+     * @param j columna de la celda central
+     * @param reemplazo valor por el que será reemplazado los valores
+     * coincidentes con buscado
+     * @param buscado valor que se busca
+     */
+    public void estructura(int i, int j, T reemplazo, T buscado) {
+
+        set(i, j, reemplazo);
+        if (this.a[i - 1][j] != null) {
+            if (this.a[i - 1][j].equals(buscado)) {
+                this.estructura(i - 1, j, reemplazo, buscado);
+            }
+        }
+
+        if (this.a[i][j + 1] != null) {
+            if (this.a[i][j + 1].equals(buscado)) {
+                this.estructura(i, j + 1, reemplazo, buscado);
+            }
+        }
+
+        if (this.a[i + 1][j] != null) {
+            if (this.a[i + 1][j].equals(buscado)) {
+                this.estructura(i + 1, j, reemplazo, buscado);
+            }
+        }
+
+        if (this.a[i][j - 1] != null) {
+            if (this.a[i][j - 1].equals(buscado)) {
+                this.estructura(i, j - 1, reemplazo, buscado);
+            }
+        }
+
+    }
+
+    /**
+     *
+     * @param v es el valor que se busca en los cumulos
+     * @param n es el valor por que se reemplazara
+     * @return el número de cumulos de v en la matriz
+     */
+    public int cumulos(T v, T n) {
+        int nCumulos = 0;
+        var m = this.insertarMatriz();
+        for (int i = 1; i < m.filas - 1; i++) {
+            for (int j = 1; j < m.columnas - 1; j++) {
+                if (m.a[i][j].equals(v)) {
+//                    n = evt.addOne(n); 
+                    m.estructura(i, j, n, v);
+                    nCumulos++;
+                }
+            }
+        }
+//        System.out.println("Matriz binarizada");
+//        m.printConsole();
+        this.matrizCumulos = m;
+        return nCumulos;
+    }
+    
+    public Matriz<T> getMatrizCumulos(){
+        return this.matrizCumulos;
+    }
+    
     
 }
