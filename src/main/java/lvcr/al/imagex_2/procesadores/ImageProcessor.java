@@ -112,9 +112,9 @@ public class ImageProcessor {
         return m;
     }
 
-    public Matriz<Byte> binary_grey(double escala_grey) {
+    public Matriz<Byte> binary_grey(int escala_grey) {
         Color c;
-        double escala;
+        int escala;
         var m = new Matriz<Byte>(altoImagen, anchoImagen, (byte) 0);
         byte v = 0;
         for (int i = 0; i < altoImagen; i++) {
@@ -123,9 +123,9 @@ public class ImageProcessor {
                 if (c.getRed() == c.getBlue() && c.getRed() == c.getGreen()) {
                     escala = c.getRed();
                     if (escala >= 0 && escala <= escala_grey) {
-                        m.set(i, j, (byte) 0);
-                    } else if (escala > escala_grey && escala <= 1) {
                         m.set(i, j, (byte) 1);
+                    } else if (escala > escala_grey && escala <= 255) {
+                        m.set(i, j, (byte) 0);
                     } else {
                         m.set(i, j, (byte) -1);
                     }

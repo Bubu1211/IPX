@@ -3,6 +3,7 @@ package lvcr.al.imagex_2.vista;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import lvcr.al.imagex_2.matrices.Matriz;
 
 /**
  * @author Lazcano Valdez César Ricardo
@@ -12,17 +13,25 @@ public final class PanelImagen extends javax.swing.JPanel {
     private int escala;
     private int width;
     private int height;
+    private Matriz<Color> matriz;
     int n = 0;
     
     public PanelImagen() {
         System.out.println("Creando panel de imagen...");
         
         escala = 1;
-        width = 200;
-        height = 100;
+        width = 0;
+        height = 0;
         
         initComponents();
         pintar();
+        
+        matriz = null;
+    }
+    
+    public void pintarImagen(Matriz<Color> m){
+        this.matriz = m;
+        repaint();
     }
     
     public void pintar(){
@@ -40,31 +49,29 @@ public final class PanelImagen extends javax.swing.JPanel {
         
         //codio de prueba
         Color colores[] = {Color.BLUE, Color.RED, Color.CYAN, Color.BLACK};
-        n++;
-        if(n >2){
-            n = 0;
-        }
-        int m = 0;
+        
         //fin codigo prueba
         
-        for(int f = 0; f<width; f++){
+        if(matriz == null){
+            System.out.println("");
+        } else{
+            gc.clearRect(0, 0, width, height);
+            width = matriz.getColumnas();
+            height = matriz.getFilas();
+            
+            for(int f = 0; f<width; f++){
             posX = 0;
             for(int c = 0; c<height; c++){
                 //codigo de prueba
-                Color color;
-                m++;
-                if(m%2 == 0){
-                    color = colores[3];
-                }else{
-                    color = colores[n];
-                }
+                
                 //fin codifo de prueba
-                gc.setColor(color);
+                gc.setColor(matriz.get(f,c));
                 gc.fillRect(posX, posY, escala, escala);
                 
                 posX += escala;
             }
             posY += escala;
+        }
         }
     }
 
