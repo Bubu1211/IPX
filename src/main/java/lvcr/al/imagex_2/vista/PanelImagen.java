@@ -3,75 +3,82 @@ package lvcr.al.imagex_2.vista;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import lvcr.al.imagex_2.matrices.Matriz;
 
 /**
  * @author Lazcano Valdez César Ricardo
  */
-public final class PanelImagen extends javax.swing.JPanel {
+public final class PanelImagen extends JPanel {
 
     private int escala;
     private int width;
     private int height;
     private Matriz<Color> matriz;
+
+    private JPanel contenedor;
     int n = 0;
-    
+
     public PanelImagen() {
+
         System.out.println("Creando panel de imagen...");
-        
+
         escala = 1;
         width = 0;
         height = 0;
-        
+
         initComponents();
         pintar();
-        
+
         matriz = null;
     }
-    
-    public void pintarImagen(Matriz<Color> m){
+
+    public void setContenedor(JPanel contenedor) {
+        this.contenedor = contenedor;
+    }
+
+    public void pintarImagen(Matriz<Color> m) {
         this.matriz = m;
         repaint();
     }
-    
-    public void pintar(){
+
+    public void pintar() {
         repaint();
     }
-    
+
     @Override
-    public void paint(Graphics g){
+    public void paint(Graphics g) {
         System.out.println("Pintando: ");
         super.paint(g);
         Graphics2D gc = (Graphics2D) g;
-        
-        int posX = 0;
-        int posY = 0;
-        
-        //codio de prueba
-        Color colores[] = {Color.BLUE, Color.RED, Color.CYAN, Color.BLACK};
-        
-        //fin codigo prueba
-        
-        if(matriz == null){
-            System.out.println("");
-        } else{
+
+        if (matriz == null) {
+            System.out.println("matriz vacía no se puede pintar");
+        } else {
             gc.clearRect(0, 0, width, height);
             width = matriz.getColumnas();
             height = matriz.getFilas();
-            
-            for(int f = 0; f<width; f++){
-            posX = 0;
-            for(int c = 0; c<height; c++){
-                //codigo de prueba
-                
-                //fin codifo de prueba
-                gc.setColor(matriz.get(f,c));
-                gc.fillRect(posX, posY, escala, escala);
-                
-                posX += escala;
+
+            this.contenedor.setSize(width * escala, height * escala);
+            System.out.println("Width panel : " + this.getWidth() + ", height: " + this.getHeight());
+
+            int posX = 0;
+            int posY = 0;
+
+            for (int f = 0; f < width; f++) {
+                posX = 0;
+                for (int c = 0; c < height; c++) {
+                    //codigo de prueba
+
+                    //fin codifo de prueba
+                    gc.setColor(matriz.get(f, c));
+                    gc.fillRect(posX, posY, escala, escala);
+
+                    posX += escala;
+                }
+                posY += escala;
             }
-            posY += escala;
-        }
         }
     }
 
@@ -83,6 +90,11 @@ public final class PanelImagen extends javax.swing.JPanel {
         addMouseWheelListener(new java.awt.event.MouseWheelListener() {
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
                 formMouseWheelMoved(evt);
+            }
+        });
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                formMouseClicked(evt);
             }
         });
 
@@ -100,24 +112,31 @@ public final class PanelImagen extends javax.swing.JPanel {
 
     //Eventon de rueda del raton
     private void formMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_formMouseWheelMoved
-        
+
         var rotacion = evt.getWheelRotation();
         var punto = evt.getPoint();
-        
+
         System.out.println("rotacion = " + rotacion);
         System.out.print("Punto: ");
-        System.out.println("("+punto.x+", "+punto.y+")");
+        System.out.println("(" + punto.x + ", " + punto.y + ")");
         //hacia delante -1
         //hacia abajo 1
-        switch(rotacion){
-            case -1 -> ++escala;
-            case 1 -> --escala;
+        switch (rotacion) {
+            case -1 ->
+                ++escala;
+            case 1 ->
+                --escala;
         }
-        if(escala == 0){
+        if (escala == 0) {
             escala = 1;
         }
         this.pintar();
     }//GEN-LAST:event_formMouseWheelMoved
+
+    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+        // TODO add your handling code here:
+        System.out.println("Click sobre panel Imagen...");
+    }//GEN-LAST:event_formMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

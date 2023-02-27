@@ -1,8 +1,12 @@
 package lvcr.al.imagex_2.vista;
 
+import java.awt.Dimension;
+import java.awt.Point;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.ScrollPaneConstants;
 import lvcr.al.imagex_2.matrices.Matriz;
 import lvcr.al.imagex_2.procesadores.ImageProcessor;
 
@@ -10,12 +14,15 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     private PanelImagen panelImagen;
     private ImageProcessor imageProcessor;
+    private boolean blocked = false;
 
     public VentanaPrincipal() {
         initComponents();
         panelImagen = new PanelImagen();
-        panelImagen.setBounds(0, 0, 600, 600);
-        getContentPane().add(new JScrollPane(panelImagen), java.awt.BorderLayout.CENTER);
+        panelImagen.setBounds(0, 0, 800, 800);
+        
+        panel.add(panelImagen, java.awt.BorderLayout.CENTER);
+        panelImagen.setContenedor(panel);
         panelImagen.pintar();
         imageProcessor = new ImageProcessor();
     }
@@ -24,8 +31,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        panel = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -36,33 +43,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 751, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
+        panel.setLayout(new java.awt.BorderLayout());
+        jScrollPane1.setViewportView(panel);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_END);
-
-        jPanel2.setOpaque(false);
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 751, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 271, Short.MAX_VALUE)
-        );
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         jMenu1.setText("Archivo");
 
@@ -120,15 +104,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         JFileChooser fileChooser = new JFileChooser("G:/Mi unidad/Universidad/proyectos/Image X/Imagenes imageX");
         int seleccion = fileChooser.showSaveDialog(this);
         if (seleccion == JFileChooser.APPROVE_OPTION) {
+            //Recuperar archivo
             File fichero = fileChooser.getSelectedFile();
-            
+            //enviar archivo a ImageProcessor
             imageProcessor.abrirImagen(fichero);
+            //Pintar Imagen
             panelImagen.pintarImagen(imageProcessor.getMatriz());
             
         }
-        //Recuperar archivo
-        //enviar archivo a ImageProcessor
-        //Pintar Imagen
     }//GEN-LAST:event_itemAbrirImagenActionPerformed
 
     private void itemBinarizacionEscalaGrisesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemBinarizacionEscalaGrisesActionPerformed
@@ -184,7 +167,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel panel;
     // End of variables declaration//GEN-END:variables
 }
