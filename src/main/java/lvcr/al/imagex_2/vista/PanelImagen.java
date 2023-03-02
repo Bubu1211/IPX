@@ -3,9 +3,11 @@ package lvcr.al.imagex_2.vista;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import lvcr.al.imagex_2.matrices.Matriz;
+import lvcr.al.imagex_2.procesadores.ImageProcessor;
 
 /**
  * @author Lazcano Valdez César Ricardo
@@ -16,11 +18,14 @@ public final class PanelImagen extends JPanel {
     private int width;
     private int height;
     private Matriz<Color> matriz;
-
     private JPanel contenedor;
     int n = 0;
+    private Point pointA;
+    private Point pointB;
+    private boolean setMuestra;
+    private ImageProcessor imageProcessor;
 
-    public PanelImagen() {
+    public PanelImagen(ImageProcessor ip, JPanel contenedor) {
 
         System.out.println("Creando panel de imagen...");
 
@@ -32,10 +37,17 @@ public final class PanelImagen extends JPanel {
         pintar();
 
         matriz = null;
+        setMuestra = false;
+        this.contenedor = contenedor;
+        this.imageProcessor = imageProcessor;
     }
 
     public void setContenedor(JPanel contenedor) {
         this.contenedor = contenedor;
+    }
+
+    public void setMuestra(boolean b) {
+        this.setMuestra = b;
     }
 
     public void pintarImagen(Matriz<Color> m) {
@@ -47,9 +59,13 @@ public final class PanelImagen extends JPanel {
         repaint();
     }
 
+    public Matriz<Color> getMatriz() {
+        return this.matriz;
+    }
+
     @Override
     public void paint(Graphics g) {
-        System.out.println("Pintando: ");
+//        System.out.println("Pintando: ");
         super.paint(g);
         Graphics2D gc = (Graphics2D) g;
 
@@ -61,7 +77,7 @@ public final class PanelImagen extends JPanel {
             height = matriz.getFilas();
 
             this.contenedor.setSize(width * escala, height * escala);
-            System.out.println("Width panel : " + this.getWidth() + ", height: " + this.getHeight());
+//            System.out.println("Width panel : " + this.getWidth() + ", height: " + this.getHeight());
 
             int posX = 0;
             int posY = 0;
@@ -95,6 +111,12 @@ public final class PanelImagen extends JPanel {
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 formMouseClicked(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                formMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                formMouseReleased(evt);
             }
         });
 
@@ -137,6 +159,43 @@ public final class PanelImagen extends JPanel {
         // TODO add your handling code here:
         System.out.println("Click sobre panel Imagen...");
     }//GEN-LAST:event_formMouseClicked
+
+    private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
+        // TODO add your handling code here:
+        System.out.println("Coordenadas presionado pressed...");
+        var x = evt.getX();
+        var y = evt.getY();
+        System.out.print("x = " + x);
+        System.out.println(", y = " + y);
+        pointA = new Point(x, y);
+
+    }//GEN-LAST:event_formMousePressed
+
+    private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
+        // TODO add your handling code here:
+        System.out.println("Coordenadas boton soltado");
+        var x = evt.getX();
+        var y = evt.getY();
+        System.out.print("x = " + x);
+        System.out.println(", y = " + y);
+        pointB = new Point(x, y);
+
+        if (setMuestra) {
+            int factor = (escala % 2 == 0) ? -1 : +1;
+            int filaA, filaB;
+            if (escala % 2 == 0) {
+                filaA = (pointA.y / escala);
+                filaB = (pointB.y / escala);
+            } else {
+                filaA = (pointA.y / escala) + factor;
+                filaB = (pointB.y / escala) + factor;
+            }
+//            setMuestra();
+            imageProcessor.setMuestra(filaA, filaB);
+            setMuestra = false;
+        }
+
+    }//GEN-LAST:event_formMouseReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

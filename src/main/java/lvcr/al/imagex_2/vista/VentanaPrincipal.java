@@ -1,30 +1,25 @@
 package lvcr.al.imagex_2.vista;
 
-import java.awt.Dimension;
-import java.awt.Point;
 import java.io.File;
 import javax.swing.JFileChooser;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.ScrollPaneConstants;
-import lvcr.al.imagex_2.matrices.Matriz;
 import lvcr.al.imagex_2.procesadores.ImageProcessor;
+import lvcr.al.imagex_2.procesadores.estructuras.Estructura;
 
 public class VentanaPrincipal extends javax.swing.JFrame {
 
     private PanelImagen panelImagen;
     private ImageProcessor imageProcessor;
-    private boolean blocked = false;
 
     public VentanaPrincipal() {
         initComponents();
-        panelImagen = new PanelImagen();
+        imageProcessor = new ImageProcessor();
+        panelImagen = new PanelImagen(imageProcessor, panel);
         panelImagen.setBounds(0, 0, 800, 800);
         
         panel.add(panelImagen, java.awt.BorderLayout.CENTER);
         panelImagen.setContenedor(panel);
         panelImagen.pintar();
-        imageProcessor = new ImageProcessor();
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -38,8 +33,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         itemAbrirImagen = new javax.swing.JMenuItem();
-        jMenu3 = new javax.swing.JMenu();
+        itemBinarizar = new javax.swing.JMenu();
         itemBinarizacionEscalaGrises = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        itemDilatacion = new javax.swing.JMenuItem();
+        itemErosion = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        muestra = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -72,7 +72,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
         jMenu2.add(itemAbrirImagen);
 
-        jMenu3.setText("Binarizar");
+        itemBinarizar.setText("Binarizar");
 
         itemBinarizacionEscalaGrises.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         itemBinarizacionEscalaGrises.setText("Binarización escalas de grises");
@@ -81,11 +81,44 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 itemBinarizacionEscalaGrisesActionPerformed(evt);
             }
         });
-        jMenu3.add(itemBinarizacionEscalaGrises);
+        itemBinarizar.add(itemBinarizacionEscalaGrises);
+
+        jMenu2.add(itemBinarizar);
+
+        jMenu3.setText("Operaciones");
+
+        itemDilatacion.setText("Dilatar");
+        itemDilatacion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemDilatacionActionPerformed(evt);
+            }
+        });
+        jMenu3.add(itemDilatacion);
+
+        itemErosion.setText("Erosion");
+        itemErosion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemErosionActionPerformed(evt);
+            }
+        });
+        jMenu3.add(itemErosion);
 
         jMenu2.add(jMenu3);
 
         jMenuBar1.add(jMenu2);
+
+        jMenu4.setText("Tools");
+
+        muestra.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        muestra.setText("Seleccionar muestra");
+        muestra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                muestraActionPerformed(evt);
+            }
+        });
+        jMenu4.add(muestra);
+
+        jMenuBar1.add(jMenu4);
 
         setJMenuBar(jMenuBar1);
 
@@ -122,26 +155,56 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         panelImagen.pintarImagen(imagenBinarizada);
     }//GEN-LAST:event_itemBinarizacionEscalaGrisesActionPerformed
 
+    private void itemDilatacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemDilatacionActionPerformed
+        // TODO add your handling code here:
+        //Dilatacion de una imagen binarizada
+        
+        Thread t = new Thread(){
+            @Override
+            public void run(){
+                var m = imageProcessor.dilatacion(panelImagen.getMatriz(), java.awt.Color.BLACK);
+                panelImagen.pintarImagen(m);
+            }
+        };
+        t.start();
+    }//GEN-LAST:event_itemDilatacionActionPerformed
+
+    private void itemErosionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemErosionActionPerformed
+        // TODO add your handling code here:
+        //Erosion de la imagen
+        
+        Thread t = new Thread(){
+            @Override
+            public void run(){
+                var m = imageProcessor.erosion(panelImagen.getMatriz(), java.awt.Color.BLACK, Estructura.VECINO_4);
+                panelImagen.pintarImagen(m);
+            }
+        };
+        t.start();
+    }//GEN-LAST:event_itemErosionActionPerformed
+
+    private void muestraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_muestraActionPerformed
+        // TODO add your handling code here:
+        panelImagen.setMuestra(true);
+    }//GEN-LAST:event_muestraActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Metal".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | 
+                javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        
         //</editor-fold>
 
         /* Create and display the form */
@@ -162,12 +225,17 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem itemAbrirImagen;
     private javax.swing.JMenuItem itemBinarizacionEscalaGrises;
+    private javax.swing.JMenu itemBinarizar;
+    private javax.swing.JMenuItem itemDilatacion;
+    private javax.swing.JMenuItem itemErosion;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenuItem muestra;
     private javax.swing.JPanel panel;
     // End of variables declaration//GEN-END:variables
 }

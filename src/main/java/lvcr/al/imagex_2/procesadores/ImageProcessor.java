@@ -1,4 +1,3 @@
-
 package lvcr.al.imagex_2.procesadores;
 
 import java.awt.Color;
@@ -8,23 +7,33 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import lvcr.al.imagex_2.matrices.Matriz;
+import lvcr.al.imagex_2.procesadores.estructuras.Celda;
+import lvcr.al.imagex_2.procesadores.estructuras.Estructura;
+import lvcr.al.imagex_2.procesadores.estructuras.ImageObject;
 
 /*
  * Clase encargada de procesar las imagenes 
  * @author César Ricardo Lazcano Valdez
+ * La clase almacena en su matriz la imagen original, sobre la imagen original se realizan los operadores
+ * a menos que el usuario indique que la imagen que se ve en pantalla sea la nueva original
  */
 public class ImageProcessor {
+
     private Matriz<Color> matriz;
     private int altoImagen;
     private int anchoImagen;
-    
-    public ImageProcessor(){
-        
+    private boolean matrizBinarizada;
+    private Muestra muestra;
+
+    public ImageProcessor() {
+        matrizBinarizada = false;
+        muestra = new Muestra();
     }
-    
+
     public void abrirImagen(File file) {
         System.out.println("Abre imagen como matriz de colores desde ImagenProcessor");
         InputStream input;
@@ -53,16 +62,16 @@ public class ImageProcessor {
             }
 //            System.out.println("Matriz de colores creada al abrir la imagen: ");
 //            matriz.printConsole();
+            matrizBinarizada = false;
 
         } catch (FileNotFoundException ex) {
 //            throw new ImageOpenException("Error al buscar el archivo \n" + ex.getMessage());
-              System.out.println("Error archivo no encontrado");
+            System.out.println("Error archivo no encontrado");
         } catch (IOException ex) {
 //            throw new ImageOpenException(ex.getMessage());
-             System.out.println("Error IOExceptin");
+            System.out.println("Error IOExceptin");
         }
     }
-    
 
     public Matriz<Color> getMatriz() {
         return matriz;
@@ -87,6 +96,7 @@ public class ImageProcessor {
         }
 //        System.out.println("Matriz Binarizada");
 //        m.printConsole();
+        matrizBinarizada = true;
         return m;
     }
 
@@ -135,7 +145,7 @@ public class ImageProcessor {
 
         return m;
     }
-    
+
     public Matriz<Color> binaryBwToImagen(Matriz<Byte> m) {
         Matriz<Color> out = new Matriz(m.getFilas(), m.getColumnas(), new Color(0, 0, 0));
         System.out.println("Iniciando binarización en el procesador de imagenes...");
@@ -218,5 +228,112 @@ public class ImageProcessor {
         return r;
     }
 
+    public Matriz<Color> dilatacion(Matriz<Color> m, Color v) {
+        var e = Estructura.VECINO_4;
+        var mc = new Matriz<Color>(m.getFilas() + e.getIncFila(),
+                m.getColumnas() + e.getIncCol(),
+                new Color(255, 255, 255));
+
+        Color aux;
+        int fila, col;
+        int filas = m.getFilas();
+        int columnas = m.getColumnas();
+
+        System.out.println("v = " + v);
+
+        for (int f = 0; f < filas; f++) {
+            for (int c = 0; c < columnas; c++) {
+                aux = m.get(f, c);
+                System.out.println("aux = " + aux);
+                if (aux.equals(v)) {
+                    for (Celda celda : e.getCeldas()) {
+                        //sumar  a + b
+                        fila = f + celda.getY();
+                        col = c + celda.getX();
+                        ///poner v en la posicion en la matriz c
+                        if (fila >= 0 && fila < filas && col >= 0 && col < columnas) {
+                            mc.set(fila, col, v);
+                        }
+                        mc.set(f, c, v);
+                    }
+                }
+            }
+        }
+        return mc;
+    }
+
+    public Matriz<Color> erosion(Matriz<Color> m,Color c, Estructura e) {
+
+        var objetosResultantes = new ArrayList<ImageObject>();
+
+        ArrayList<ImageObject> objetos = m.cumulos(c, Color.CYAN);
+
+        for (ImageObject o : objetos) {
+
+            boolean pertenece;
+            Celda eval;
+
+            var res = new ImageObject(m.getFilas(), m.getColumnas());
+            for (Celda a : o.getPosiciones()) {
+                pertenece = true;
+                for (Celda b : e.getCeldas()) {
+                    eval = a.add(b);
+                    if (!o.contains(eval)) {
+                        pertenece = false;
+                        break;
+                    }
+                }
+                if (pertenece) {
+                    res.add(a);
+                }
+            }
+            objetosResultantes.add(res);
+        }
+
+        var mc = this.matrizFromObjetos(objetosResultantes);
+        return mc;
+    }
     
+    public Matriz<Color> matrizFromObjetos(ArrayList<ImageObject> objetos){
+        var m = new Matriz<Color>(objetos.get(0).getAlto(), objetos.get(0).getAncho(), Color.WHITE);
+
+        m.inicializar();
+
+        ImageObject o;
+        Celda c;
+        for(int i = 0; i<objetos.size(); i++){
+            o = objetos.get(i);
+            for(int j = 0; j<o.getPosiciones().size(); j++){
+                c = o.getPosiciones().get(j);
+                m.set(c.getY(), c.getX(), Color.BLACK);
+            }
+        }
+        return m;
+    }
+    
+    public void setMuestra(int filaA, int filaB){
+        this.muestra = new Muestra();
+        muestra.setA(filaA);
+        muestra.setB(filaB);
+        System.out.println("Muestra = " + muestra);
+    }
+
+    class Muestra{
+        int filaA;
+        int filaB;
+        int columnaA;
+        int columnaB;
+        
+        public void setA(int filaA){
+            this.filaA = filaA;
+        }
+        
+        public void setB(int filaB){
+            this.filaB = filaB;
+        }
+        
+        public String toString(){
+            return "filaA = "+filaA+ " , filaB = "+filaB;
+        }
+    }
 }
