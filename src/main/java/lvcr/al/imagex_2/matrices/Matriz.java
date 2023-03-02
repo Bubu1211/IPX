@@ -1,6 +1,9 @@
 package lvcr.al.imagex_2.matrices;
 
 import java.util.ArrayList;
+import java.util.List;
+import lvcr.al.imagex_2.procesadores.estructuras.Celda;
+import lvcr.al.imagex_2.procesadores.estructuras.ImageObject;
 
 /**
  * @author César Ricardo Lazcano Valdez
@@ -294,7 +297,7 @@ public class Matriz <T>{
      * @param n es el valor por que se reemplazara
      * @return el número de cumulos de v en la matriz
      */
-    public int cumulos(T v, T n) {
+    public int conteoCumulos(T v, T n) {
         int nCumulos = 0;
         var m = this.insertarMatriz();
         for (int i = 1; i < m.filas - 1; i++) {
@@ -311,6 +314,81 @@ public class Matriz <T>{
         this.matrizCumulos = m;
         return nCumulos;
     }
+    
+    /**
+     *
+     * @param v es el valor que se busca en los cumulos
+     * @param n es el valor por que se reemplazara
+     * @return el número de cumulos de v en la matriz
+     */
+    public ArrayList<ImageObject> cumulos(T v, T n){
+        
+        var listaObjetos = new ArrayList<ImageObject>();
+        
+        var m = this.insertarMatriz();
+        ImageObject o = null; 
+        
+        for (int i = 1; i < m.filas - 1; i++) {
+            for (int j = 1; j < m.columnas - 1; j++) {
+                if (m.a[i][j].equals(v)) {
+                    o = new ImageObject(this.filas, this.columnas);
+                    m.estructuraCumulo(i, j, n, v, o);
+                    listaObjetos.add(o);
+                }
+            }
+        }
+        this.matrizCumulos = m;
+        return listaObjetos;
+    }
+    
+    
+     /**
+     * busca cumulos usando la estructura de manhattan, para aplicarla en la
+     * busqueda del 4-vercino
+     *
+     * @param i fila de la celda central
+     * @param j columna de la celda central
+     * @param reemplazo valor por el que será reemplazado los valores
+     * coincidentes con buscado
+     * @param buscado valor que se busca
+     * @param o objeto al que sl que se le van a introducir las coordenadas
+     */
+    public void estructuraCumulo(Integer i, Integer j, T reemplazo, T buscado, ImageObject o) {
+
+        try{
+            set(i, j, reemplazo);
+            if (this.a[i - 1][j] != null) {
+                if (this.a[i - 1][j].equals(buscado)) {
+                    this.estructuraCumulo(i - 1, j, reemplazo, buscado, o);
+                    o.add(new Celda(j, i-1));
+                }
+            }
+
+            if (this.a[i][j + 1] != null) {
+                if (this.a[i][j + 1].equals(buscado)) {
+                    this.estructuraCumulo(i, j + 1, reemplazo, buscado, o);
+                    o.add(new Celda(j+1, i));
+                }
+            }
+
+            if (this.a[i + 1][j] != null) {
+                if (this.a[i + 1][j].equals(buscado)) {
+                    this.estructuraCumulo(i + 1, j, reemplazo, buscado, o);
+                    o.add(new Celda(j, i+1));
+                }
+            }
+
+            if (this.a[i][j - 1] != null) {
+                if (this.a[i][j - 1].equals(buscado)) {
+                    this.estructuraCumulo(i, j - 1, reemplazo, buscado, o);
+                    o.add(new Celda(j-1, i));
+                }
+            }
+        }catch(StackOverflowError e){
+            System.out.println("Error memoria desbordada...");
+        }
+    }
+
     
     public Matriz<T> getMatrizCumulos(){
         return this.matrizCumulos;
