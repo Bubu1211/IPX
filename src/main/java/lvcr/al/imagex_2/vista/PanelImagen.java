@@ -39,7 +39,7 @@ public final class PanelImagen extends JPanel {
         matriz = null;
         setMuestra = false;
         this.contenedor = contenedor;
-        this.imageProcessor = imageProcessor;
+        this.imageProcessor = ip;
     }
 
     public void setContenedor(JPanel contenedor) {
@@ -72,29 +72,36 @@ public final class PanelImagen extends JPanel {
         if (matriz == null) {
             System.out.println("matriz vacía no se puede pintar");
         } else {
-            gc.clearRect(0, 0, width, height);
-            width = matriz.getColumnas();
-            height = matriz.getFilas();
+//            Thread t = new Thread() {
+//                @Override
+//                public void run() {
+                    gc.clearRect(0, 0, width, height);
+                    width = matriz.getColumnas();
+                    height = matriz.getFilas();
 
-            this.contenedor.setSize(width * escala, height * escala);
+                    contenedor.setSize(width * escala, height * escala);
 //            System.out.println("Width panel : " + this.getWidth() + ", height: " + this.getHeight());
 
-            int posX = 0;
-            int posY = 0;
+                    int posX = 0;
+                    int posY = 0;
 
-            for (int f = 0; f < width; f++) {
-                posX = 0;
-                for (int c = 0; c < height; c++) {
-                    //codigo de prueba
+                    for (int f = 0; f < width; f++) {
+                        posX = 0;
+                        for (int c = 0; c < height; c++) {
+                            //codigo de prueba
 
-                    //fin codifo de prueba
-                    gc.setColor(matriz.get(f, c));
-                    gc.fillRect(posX, posY, escala, escala);
+                            //fin codifo de prueba
+                            gc.setColor(matriz.get(f, c));
+                            gc.fillRect(posX, posY, escala, escala);
 
-                    posX += escala;
-                }
-                posY += escala;
-            }
+                            posX += escala;
+                        }
+                        posY += escala;
+                    }
+//                }
+//            };
+//            t.start();
+            System.out.println("Pintando en ejecución");
         }
     }
 
@@ -181,17 +188,13 @@ public final class PanelImagen extends JPanel {
         pointB = new Point(x, y);
 
         if (setMuestra) {
-            int factor = (escala % 2 == 0) ? -1 : +1;
-            int filaA, filaB;
-            if (escala % 2 == 0) {
-                filaA = (pointA.y / escala);
-                filaB = (pointB.y / escala);
-            } else {
-                filaA = (pointA.y / escala) + factor;
-                filaB = (pointB.y / escala) + factor;
-            }
+            int filaA = (pointA.y / escala);
+            int filaB = (pointB.y / escala);
+            int colA = (pointA.x / escala);
+            int colB = (pointB.x / escala);
+
 //            setMuestra();
-            imageProcessor.setMuestra(filaA, filaB);
+            imageProcessor.setMuestra(filaA, colA, filaB, colB);
             setMuestra = false;
         }
 

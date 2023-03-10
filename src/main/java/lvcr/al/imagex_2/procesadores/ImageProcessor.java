@@ -244,12 +244,12 @@ public class ImageProcessor {
         for (int f = 0; f < filas; f++) {
             for (int c = 0; c < columnas; c++) {
                 aux = m.get(f, c);
-                System.out.println("aux = " + aux);
+//                System.out.println("aux = " + aux);
                 if (aux.equals(v)) {
                     for (Celda celda : e.getCeldas()) {
                         //sumar  a + b
-                        fila = f + celda.getY();
-                        col = c + celda.getX();
+                        fila = f + celda.y;
+                        col = c + celda.x;
                         ///poner v en la posicion en la matriz c
                         if (fila >= 0 && fila < filas && col >= 0 && col < columnas) {
                             mc.set(fila, col, v);
@@ -305,16 +305,21 @@ public class ImageProcessor {
             o = objetos.get(i);
             for(int j = 0; j<o.getPosiciones().size(); j++){
                 c = o.getPosiciones().get(j);
-                m.set(c.getY(), c.getX(), Color.BLACK);
+                m.set(c.y, c.x, Color.BLACK);
             }
         }
         return m;
     }
     
-    public void setMuestra(int filaA, int filaB){
+    public Matriz<Color> getMuestra(){
+        var m = this.matriz.getSubMatriz(muestra.filaA, muestra.columnaA, muestra.filaB, muestra.columnaB);
+        return m;
+    }
+    
+    public void setMuestra(int filaA, int colA, int filaB, int colB){
         this.muestra = new Muestra();
-        muestra.setA(filaA);
-        muestra.setB(filaB);
+        muestra.setA(filaA, colA);
+        muestra.setB(filaB, colB);
         System.out.println("Muestra = " + muestra);
     }
 
@@ -324,16 +329,19 @@ public class ImageProcessor {
         int columnaA;
         int columnaB;
         
-        public void setA(int filaA){
+        public void setA(int filaA, int colA){
             this.filaA = filaA;
+            this.columnaA = colA;
         }
         
-        public void setB(int filaB){
+        public void setB(int filaB, int colB){
             this.filaB = filaB;
+            this.columnaB = colB;
         }
-        
-        public String toString(){
-            return "filaA = "+filaA+ " , filaB = "+filaB;
+
+        @Override
+        public String toString() {
+            return "Muestra{" + "filaA=" + filaA + ", filaB=" + filaB + ", columnaA=" + columnaA + ", columnaB=" + columnaB + '}';
         }
     }
 }

@@ -3,6 +3,7 @@ package lvcr.al.imagex_2.vista;
 import java.io.File;
 import javax.swing.JFileChooser;
 import lvcr.al.imagex_2.procesadores.ImageProcessor;
+import lvcr.al.imagex_2.procesadores.analisis.histograma.Histograma;
 import lvcr.al.imagex_2.procesadores.estructuras.Estructura;
 
 public class VentanaPrincipal extends javax.swing.JFrame {
@@ -12,6 +13,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     public VentanaPrincipal() {
         initComponents();
+        
+        this.setExtendedState(MAXIMIZED_BOTH);
+        
         imageProcessor = new ImageProcessor();
         panelImagen = new PanelImagen(imageProcessor, panel);
         panelImagen.setBounds(0, 0, 800, 800);
@@ -40,6 +44,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         itemErosion = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         muestra = new javax.swing.JMenuItem();
+        crearHistograma = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -118,6 +123,15 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
         jMenu4.add(muestra);
 
+        crearHistograma.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        crearHistograma.setText("Crear Histograma");
+        crearHistograma.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                crearHistogramaActionPerformed(evt);
+            }
+        });
+        jMenu4.add(crearHistograma);
+
         jMenuBar1.add(jMenu4);
 
         setJMenuBar(jMenuBar1);
@@ -188,6 +202,21 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         panelImagen.setMuestra(true);
     }//GEN-LAST:event_muestraActionPerformed
 
+    private void crearHistogramaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crearHistogramaActionPerformed
+        // TODO add your handling code here:
+        //obtener la muestra : una matriz más pequeña de ImageProcessor
+        var muestraMatriz = this.imageProcessor.getMuestra();
+        //dar a una clase Histograma la matriz
+        //Cargar el histograma
+        Histograma histograma = new Histograma();
+        histograma.applyHistogramaFilas(muestraMatriz);
+        //mostrar en consola el histograma actual
+        histograma.printHistograma();
+        //mostrar la ventana con los histogramas
+        histograma.viewHistograma();
+        histograma.runView();
+    }//GEN-LAST:event_crearHistogramaActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -223,6 +252,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem crearHistograma;
     private javax.swing.JMenuItem itemAbrirImagen;
     private javax.swing.JMenuItem itemBinarizacionEscalaGrises;
     private javax.swing.JMenu itemBinarizar;
