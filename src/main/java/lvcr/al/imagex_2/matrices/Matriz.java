@@ -388,6 +388,20 @@ public class Matriz <T>{
             System.out.println("Error memoria desbordada...");
         }
     }
+    
+    public Matriz<T> getSubMatriz(int filaA, int colA, int filaB, int colB){
+        var m = new Matriz<T>(Math.abs(filaB-filaA)+1, Math.abs(colB-colA)+1, this.inicial);
+        int fx = 0, cx = 0;
+        for(int f = filaA; f <= filaB; f++){
+            cx = 0;
+            for(int c = colA; c <= colB; c++){
+                m.a[fx][cx] = this.a[f][c];
+                cx++;
+            }
+            fx++;
+        }
+        return m;
+    }
 
     
     public Matriz<T> getMatrizCumulos(){
