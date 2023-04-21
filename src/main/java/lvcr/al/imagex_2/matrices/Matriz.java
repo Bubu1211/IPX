@@ -51,6 +51,10 @@ public class Matriz <T>{
         this.matrizCumulos = null;
         inicializar();
     }
+    
+    public T[][] get(){
+        return (T[][]) this.a;
+    }
 
     /**
      * Pone un valor en una determinada posición Las posiciones empiezan desde 0

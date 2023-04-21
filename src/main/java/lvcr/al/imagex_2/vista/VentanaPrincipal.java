@@ -39,6 +39,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         itemAbrirImagen = new javax.swing.JMenuItem();
         itemBinarizar = new javax.swing.JMenu();
         itemBinarizacionEscalaGrises = new javax.swing.JMenuItem();
+        itemBinarizar1 = new javax.swing.JMenu();
+        itemBinarizacionEscalaGrises1 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         itemDilatacion = new javax.swing.JMenuItem();
         itemErosion = new javax.swing.JMenuItem();
@@ -87,6 +89,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
         itemBinarizar.add(itemBinarizacionEscalaGrises);
+
+        itemBinarizar1.setText("Binarizar");
+
+        itemBinarizacionEscalaGrises1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        itemBinarizacionEscalaGrises1.setText("Binarización escalas de grises");
+        itemBinarizacionEscalaGrises1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemBinarizacionEscalaGrises1ActionPerformed(evt);
+            }
+        });
+        itemBinarizar1.add(itemBinarizacionEscalaGrises1);
+
+        itemBinarizar.add(itemBinarizar1);
 
         jMenu2.add(itemBinarizar);
 
@@ -217,6 +232,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         histograma.runView();
     }//GEN-LAST:event_crearHistogramaActionPerformed
 
+    private void itemBinarizacionEscalaGrises1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemBinarizacionEscalaGrises1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_itemBinarizacionEscalaGrises1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -255,7 +274,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem crearHistograma;
     private javax.swing.JMenuItem itemAbrirImagen;
     private javax.swing.JMenuItem itemBinarizacionEscalaGrises;
+    private javax.swing.JMenuItem itemBinarizacionEscalaGrises1;
     private javax.swing.JMenu itemBinarizar;
+    private javax.swing.JMenu itemBinarizar1;
     private javax.swing.JMenuItem itemDilatacion;
     private javax.swing.JMenuItem itemErosion;
     private javax.swing.JMenu jMenu1;
