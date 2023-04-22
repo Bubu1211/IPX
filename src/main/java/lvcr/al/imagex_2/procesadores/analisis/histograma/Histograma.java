@@ -19,13 +19,13 @@ public class Histograma {
         componentes = new ArrayList<>();
     }
     
-    public void applyHistogramaFilas(Matriz<Color> m){
+    public void applyHistogramaFilas(Matriz<Integer> m){
         HashMap<Integer, Integer> hash = null;
         Integer rgb = 0, fre = 0;
         for(int f = 0; f<m.getFilas(); f++){
             hash = new HashMap<>();
             for(int c = 0; c<m.getColumnas(); c++){
-                rgb = m.get(f, c).getRGB();
+                rgb = m.get(f, c);
                 fre = hash.get(rgb);
                 if(fre == null){
                     hash.put(rgb, 1);

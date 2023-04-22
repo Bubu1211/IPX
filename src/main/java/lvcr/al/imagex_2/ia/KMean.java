@@ -1,15 +1,14 @@
 package lvcr.al.imagex_2.ia;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import lvcr.al.imagex_2.matrices.Matriz;
 
 public class KMean {
 
-    private Cluster[] clusters;
-    private static final int EUCLIDEAN_RGB = 1;
-    private static final int SUPERVISADO = 1;
+    public Cluster[] clusters;
+    public  static final int EUCLIDEAN_RGB = 1;
+    public static final int SUPERVISADO = 1;
 
     public KMean() {
     }
@@ -21,7 +20,7 @@ public class KMean {
      * @param imagen
      * @param centroides
      */
-    public void kmeanSupervisado(int algoritmo, Matriz<Color> imagen, Color centroides[]) {
+    public void kmeanSupervisado(int algoritmo, Matriz<Integer> imagen, Integer centroides[]) {
         selectCluster(SUPERVISADO, centroides);
 
         switch (algoritmo) {
@@ -30,7 +29,7 @@ public class KMean {
         }
     }
 
-    private void selectCluster(int Tipo, Color centroides[]) {
+    private void selectCluster(int Tipo, Integer centroides[]) {
         switch (Tipo) {
             case SUPERVISADO -> {
                 clusters = new Cluster[centroides.length];
@@ -41,10 +40,10 @@ public class KMean {
         }
     }
 
-    private void kmeanEuclideanRgb(Matriz<Color> imagen) {
-        Color[][] img = imagen.get();
+    private void kmeanEuclideanRgb(Matriz<Integer> imagen) {
+        Integer[][] img = imagen.get();
         int r = 0, g = 0, b = 0, ik;
-        Color col;
+        Integer col;
         double  menor = 0, distancia = 0;
         for (int f = 0; f < imagen.getFilas(); f++) {
             for (int c = 0; c < imagen.getColumnas(); c++) {
@@ -64,47 +63,21 @@ public class KMean {
         
     }
     
-    private double distanciaEuclidiana(Color centroide, Color color) {
-        int r = color.getRed();
-        int g = color.getGreen();
-        int b = color.getBlue();
+    private double distanciaEuclidiana(Integer centroide, Integer color) {
+        int r = (color >> 16) & 0xFF;
+        int g = (color >> 8) & 0xFF;
+        int b = (color) & 0xFF;
 
-        double d1 = Math.pow(Math.abs(centroide.getRed() - r), 2);
-        double d2 = Math.pow(Math.abs(centroide.getGreen() - g), 2);
-        double d3 = Math.pow(Math.abs(centroide.getBlue() - b), 2);
+        double d1 = Math.pow(Math.abs(((centroide >> 16) & 0xFF) - r), 2);
+        double d2 = Math.pow(Math.abs(((centroide >> 8) & 0xFF) - g), 2);
+        double d3 = Math.pow(Math.abs(((centroide) & 0xFF) - b), 2);
         double raiz = d1 + d2 + d3;
         return Math.sqrt(raiz);
     }
     
-}
 
-class Cluster {
 
-    List<OKMean> cluster;
-    Color centroide;
 
-    public Cluster(Color centroide) {
-        cluster = new ArrayList<>();
-        this.centroide = centroide;
-    }
-
-    public void add(Color color, int x, int y) {
-        cluster.add(new OKMean(color, x, y));
-    }
-
-    class OKMean {
-
-        Color color;
-        int x;
-        int y;
-
-        public OKMean(Color color, int x, int y) {
-            this.color = color;
-            this.x = x;
-            this.y = y;
-        }
-
-    }
 }
 
 

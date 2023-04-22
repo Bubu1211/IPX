@@ -1,6 +1,5 @@
 package lvcr.al.imagex_2.procesadores;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,19 +22,29 @@ import lvcr.al.imagex_2.procesadores.estructuras.ImageObject;
  */
 public class ImageProcessor {
 
-    private Matriz<Color> matriz;
+    private Matriz<Integer> matriz;
     private int altoImagen;
     private int anchoImagen;
     private boolean matrizBinarizada;
     private Muestra muestra;
+
+    public static final int BLACK = -16777216;
+    public static final int WHITE = -1;
+    public static final int CYAN = -16711681;
 
     public ImageProcessor() {
         matrizBinarizada = false;
         muestra = new Muestra();
     }
 
+    /**
+     * Convierte una imagen contenida en un objeto file (archivo) en una matriz
+     * de enteros que representan los colores encontrados en cada pixel
+     *
+     * @param file archivo .png, .jpg, etc. que contiene la imagen que se desea
+     * procesar
+     */
     public void abrirImagen(File file) {
-        System.out.println("Abre imagen como matriz de colores desde ImagenProcessor");
         InputStream input;
         ImageInputStream imageInput;
         try {
@@ -46,200 +55,275 @@ public class ImageProcessor {
 
             ///determina medidas de la imagen en pixeles
             altoImagen = imagen.getHeight();
-            System.out.println("altoImagen IP= " + altoImagen);
             anchoImagen = imagen.getWidth();
-            System.out.println("AnchoImagen IP= " + anchoImagen);
 
             ///Inicializa la matriz de colores 
-            this.matriz = new Matriz<>(altoImagen, anchoImagen, new Color(0, 0, 0));
-            java.awt.Color col;
+            this.matriz = new Matriz<>(altoImagen, anchoImagen, -1);
             ///Recupera pixel por pixel de la imagen en su modo RGB
             for (int f = 0; f < altoImagen; f++) {
                 for (int c = 0; c < anchoImagen; c++) {
-                    col = new java.awt.Color(imagen.getRGB(c, f));
-                    matriz.set(f, c, col);
+                    matriz.set(f, c, imagen.getRGB(c, f));
                 }
             }
-//            System.out.println("Matriz de colores creada al abrir la imagen: ");
-//            matriz.printConsole();
             matrizBinarizada = false;
 
         } catch (FileNotFoundException ex) {
 //            throw new ImageOpenException("Error al buscar el archivo \n" + ex.getMessage());
-            System.out.println("Error archivo no encontrado");
+            System.out.println("Error archivo no encontrado \n" + ex.getMessage());
         } catch (IOException ex) {
 //            throw new ImageOpenException(ex.getMessage());
-            System.out.println("Error IOExceptin");
+            System.out.println("Error IOExceptin \n" + ex.getMessage());
         }
     }
 
-    public Matriz<Color> getMatriz() {
+    /**
+     *
+     * @return la matriz de enteros que representa a la imagen rgb
+     */
+    public Matriz<Integer> getMatriz() {
         return matriz;
     }
 
-    public void setMatriz(Matriz<Color> matriz) {
+    /**
+     * Cambiar la matriz de enteros representativos de los colores de la imagen
+     * en esencia, cambia la imagen contenida en este procesador
+     *
+     * @param matriz Nueva matriz que representará a la imagen
+     */
+    public void setMatriz(Matriz<Integer> matriz) {
         this.matriz = matriz;
     }
 
-    public Matriz<Byte> bynaryBwMatrizColores(Matriz<Color> matriz) {
-        var m = new Matriz<>(altoImagen, anchoImagen, (byte) 0);
+    /**
+     *
+     * @param matriz matriz de enteros representantes del color, es la imagen a
+     * la que se le aplicará la binarización
+     * @return matriz de bytes que representan la binarización hecha
+     */
+    public Matriz<Byte> bynaryBwMatrizColores(Matriz<Integer> matriz) {
+        var m = new Matriz<Byte>(altoImagen, anchoImagen, (byte) 0);
 
         for (int i = 0; i < altoImagen; i++) {
             for (int j = 0; j < anchoImagen; j++) {
-                Color color;
-                if (matriz.get(i, j).equals(Color.BLACK)) {
-                    m.set(i, j, (byte) 1);
+                if (matriz.get(i, j) == BLACK) {
+                    m.a[i][j] = (byte) 1;
                 } else {
-                    m.set(i, j, (byte) 0);
+                    m.a[i][j] = (byte) 0;
                 }
             }
         }
-//        System.out.println("Matriz Binarizada");
-//        m.printConsole();
         matrizBinarizada = true;
         return m;
     }
 
-    public Matriz<Byte> binary_black_white() {
-
-        int newFilas = this.matriz.getFilas();
-        int newColumnas = this.matriz.getColumnas();
-
-        var m = new Matriz<Byte>(newFilas, newColumnas, (byte) 0);
-
-        System.out.println("binary_black_white altoImagen = " + newFilas);
-        System.out.println(" binary_black_white anchoImagen = " + newColumnas);
-
-        for (int i = 0; i < newFilas; i++) {
-            for (int j = 0; j < newColumnas; j++) {
-                if (Color.BLACK.equals(matriz.get(i, j))) {
-                    m.set(i, j, (byte) 1);
-                } else {
-                    m.set(i, j, (byte) 0);
-                }
-            }
-        }
-        return m;
-    }
-
-    public Matriz<Byte> binary_grey(int escala_grey) {
-        Color c;
-        int escala;
+    /**
+     * Para aplicar se necesita tener en escala de grises la imagen (sino,
+     * aplicar antes filtro de escala de grises) Si la binarizacion es superior
+     * entonces: Si el valor del pixel es menor a la escala entonces la
+     * binarización cae en 0 Si el valor del pixel es mayor o igual a la escala
+     * entonces la binarizacion cae en 1 Si la imagen no esta en escala de
+     * grises entonces solo se Si la binarizacion es inferior entonces se
+     * realiza al reves usará el color rojo, pero el resultado será erroneo al
+     * esperado
+     *
+     * @param escala_grey escala de gris la cual se tomará para hacer la
+     * binarización
+     * @param superior indica si la binarización es superior o inferior, si es
+     * True entonces la binarizacion se realiza como superior
+     * @return matriz binarizada
+     */
+    public Matriz<Byte> binary_grey(int escala_grey, boolean superior) {
         var m = new Matriz<Byte>(altoImagen, anchoImagen, (byte) 0);
-        byte v = 0;
+
+        byte v = superior ? (byte) 1 : (byte) 0;
+        byte v1 = v == 1 ? (byte) 0 : (byte) 1;
+
         for (int i = 0; i < altoImagen; i++) {
             for (int j = 0; j < anchoImagen; j++) {
-                c = matriz.get(i, j);
-                if (c.getRed() == c.getBlue() && c.getRed() == c.getGreen()) {
-                    escala = c.getRed();
-                    if (escala >= 0 && escala <= escala_grey) {
-                        m.set(i, j, (byte) 1);
-                    } else if (escala > escala_grey && escala <= 255) {
-                        m.set(i, j, (byte) 0);
-                    } else {
-                        m.set(i, j, (byte) -1);
-                    }
+                int escala = (((int) matriz.a[i][j]) >> 16) & 0xFF;
+                if (escala >= 0 && escala <= escala_grey) {
+                    m.set(i, j, v1);
+                } else if (escala > escala_grey && escala <= 255) {
+                    m.set(i, j, v);
+                } else {
+                    m.set(i, j, (byte) -1);
                 }
             }
         }
-
         return m;
     }
 
-    public Matriz<Color> binaryBwToImagen(Matriz<Byte> m) {
-        Matriz<Color> out = new Matriz(m.getFilas(), m.getColumnas(), new Color(0, 0, 0));
-        System.out.println("Iniciando binarización en el procesador de imagenes...");
+    /**
+     * Convierte una matriz que fue binarizada por sus escalas de blanco y negro
+     * o de grises en una matriz de enteros que representan colores
+     *
+     * @param m la matriz binarizada
+     * @return Matriz de enteros que representan una imagen en blanco y negro
+     */
+    public Matriz<Integer> binaryBwToImagen(Matriz<Byte> m) {
+        Matriz<Integer> out = new Matriz(m.getFilas(), m.getColumnas(), BLACK);
 
-        var fils = m.getFilas();
-        var columns = m.getColumnas();
+        int fils = m.getFilas();
+        int columns = m.getColumnas();
 
         for (int f = 0; f < fils; f++) {
             for (int c = 0; c < columns; c++) {
                 if (m.get(f, c) == 1) {
-                    out.set(f, c, Color.BLACK);
+                    out.a[f][c] = BLACK;
                 } else {
-                    out.set(f, c, Color.WHITE);
+                    out.a[f][c] = WHITE;
                 }
             }
         }
-        System.out.println("Terminando de binarizar por escala de grises en el procesador de imagenes");
         return out;
     }
 
-    public Matriz<Color> deleteRed() {
-        Color color;
+    /**
+     * Aplica un filtro de eliminación de rojo a la imagen contenida en este
+     * procesador \n El valor Red de la escala RGB de cada pixel es disminuido a
+     * 0
+     *
+     * @return Matriz de enteros que representa la imagen resultante de aplicar
+     * el filtro
+     */
+    public Matriz<Integer> deleteRed() {
+        int color;
         var fils = matriz.getFilas();
         var cols = matriz.getColumnas();
-        var r = new Matriz<Color>(this.altoImagen, this.anchoImagen, new Color(0, 0, 0));
+        var r = new Matriz<Integer>(this.altoImagen, this.anchoImagen, BLACK);
 
         for (int f = 0; f < fils; f++) {
             for (int c = 0; c < cols; c++) {
-                color = matriz.get(f, c);
-                r.set(f, c, new Color(0, color.getGreen(), color.getBlue()));
+                color = ((int) matriz.a[f][c]);
+                r.set(f, c, (((color >> 8) & 0xFF) << 8) | (color & 0xFF));
             }
         }
         return r;
     }
 
-    public Matriz<Color> filterAddRed() {
-        Color color;
-        var filas = matriz.getFilas();
+    /**
+     * Aplica un filtro de eliminación de verde a la imagen contenida en este
+     * procesador \n El valor Green de la escala RGB de cada pixel es disminuido
+     * a 0
+     *
+     * @return Matriz de enteros que representa la imagen resultante de aplicar
+     * el filtro
+     */
+    public Matriz<Integer> deleteGreen() {
+        int color;
+        var fils = matriz.getFilas();
         var cols = matriz.getColumnas();
-        var r = new Matriz<Color>(this.altoImagen, this.anchoImagen, new Color(0, 0, 0));
+        var r = new Matriz<Integer>(this.altoImagen, this.anchoImagen, BLACK);
 
-        for (int f = 0; f < filas; f++) {
+        for (int f = 0; f < fils; f++) {
             for (int c = 0; c < cols; c++) {
-                color = matriz.get(f, c);
-                r.set(f, c, new Color(color.getGreen(), color.getBlue(), 1));
+                color = ((int) matriz.a[f][c]);
+                r.set(f, c,
+                        (((color >> 16) & 0xFF) << 16)
+                        | ((color) & 0xFF)
+                );
             }
         }
         return r;
     }
 
-    public Matriz<Color> filterAddGreen() {
-        Color color;
-        var filas = matriz.getFilas();
+    /**
+     * Aplica un filtro de eliminación de azul a la imagen contenida en este
+     * procesador \n El valor Blue de la escala RGB de cada pixel es disminuido
+     * a 0
+     *
+     * @return Matriz de enteros que representa la imagen resultante de aplicar
+     * el filtro
+     */
+    public Matriz<Integer> deleteBlue() {
+        int color;
+        var fils = matriz.getFilas();
         var cols = matriz.getColumnas();
-        var r = new Matriz<Color>(this.altoImagen, this.anchoImagen, new Color(0, 0, 0));
-        System.out.println("Filtro addGreen ImagenProcessor inicia ");
-        for (int f = 0; f < filas; f++) {
+        var r = new Matriz<Integer>(this.altoImagen, this.anchoImagen, BLACK);
+
+        for (int f = 0; f < fils; f++) {
             for (int c = 0; c < cols; c++) {
-                color = matriz.get(f, c);
-                r.set(f, c, color);
+                color = ((int) matriz.a[f][c]);
+                r.set(f, c,
+                        (((color >> 16) & 0xFF) << 16
+                        | ((color >> 8) & 0xFF) << 8)
+                );
             }
         }
-        System.out.println("Filtro addGreen ImagenProcessor termina ");
         return r;
     }
 
-    public Matriz<Color> filterAddBlue() {
-        System.out.println("Filtro azul origin: ImagenProcessor");
-        Color color;
-        var filas = matriz.getFilas();
+    /**
+     * Aplica un filtro de agregación de rojo a la imagen contenida en este procesador \n El valor Red de la escala
+     * RGB de cada pixel es aumentado en 255
+     * @return Matriz de enteros que representa la imagen resultante de aplicar el filtro
+     */
+    public Matriz<Integer> filterAddRed() {
+        int color;
+        var fils = matriz.getFilas();
         var cols = matriz.getColumnas();
-        var r = new Matriz<Color>(this.altoImagen, this.anchoImagen, new Color(0, 0, 0));
+        var r = new Matriz<Integer>(this.altoImagen, this.anchoImagen, BLACK);
 
-        for (int f = 0; f < filas; f++) {
+        for (int f = 0; f < fils; f++) {
             for (int c = 0; c < cols; c++) {
-                color = matriz.get(f, c);
-                r.set(f, c, color);
+                color = ((int) matriz.a[f][c]);
+                r.set(f, c, (255 << 16  | ((color >> 8) & 0xFF) << 8) | (color & 0xFF) );
             }
         }
         return r;
     }
 
-    public Matriz<Color> dilatacion(Matriz<Color> m, Color v) {
+
+    /**
+     * Aplica un filtro de agregación de verde a la imagen contenida en este procesador \n El valor Green de la escala
+     * RGB de cada pixel es aumentado en 255
+     * @return Matriz de enteros que representa la imagen resultante de aplicar el filtro
+     */
+    public Matriz<Integer> filterAddGreen() {
+        int color;
+        var fils = matriz.getFilas();
+        var cols = matriz.getColumnas();
+        var r = new Matriz<Integer>(this.altoImagen, this.anchoImagen, BLACK);
+
+        for (int f = 0; f < fils; f++) {
+            for (int c = 0; c < cols; c++) {
+                color = ((int) matriz.a[f][c]);
+                r.set(f, c, (((color>>16) & 0xFF ) << 16  | 255 << 8) | (color & 0xFF) );
+            }
+        }
+        return r;
+    }
+    
+    /**
+     * Aplica un filtro de agregación de azul a la imagen contenida en este procesador \n El valor Blue de la escala
+     * RGB de cada pixel es aumentado en 255
+     * @return Matriz de enteros que representa la imagen resultante de aplicar el filtro
+     */
+    public Matriz<Integer> filterAddBlue() {
+        int color;
+        var fils = matriz.getFilas();
+        var cols = matriz.getColumnas();
+        var r = new Matriz<Integer>(this.altoImagen, this.anchoImagen, BLACK);
+
+        for (int f = 0; f < fils; f++) {
+            for (int c = 0; c < cols; c++) {
+                color = ((int) matriz.a[f][c]);
+                r.set(f, c, (((color>>16) & 0xFF ) << 16  | ((color>>8) & 0xFF ) << 8) | (255) );
+            }
+        }
+        return r;
+    }
+    
+    public Matriz<Integer> dilatacion(Matriz<Integer> m, Integer v) {
         var e = Estructura.VECINO_4;
-        var mc = new Matriz<Color>(m.getFilas() + e.getIncFila(),
+        var mc = new Matriz<Integer>(m.getFilas() + e.getIncFila(),
                 m.getColumnas() + e.getIncCol(),
-                new Color(255, 255, 255));
+                WHITE);
 
-        Color aux;
+        Integer aux;
         int fila, col;
         int filas = m.getFilas();
         int columnas = m.getColumnas();
-
-        System.out.println("v = " + v);
 
         for (int f = 0; f < filas; f++) {
             for (int c = 0; c < columnas; c++) {
@@ -262,11 +346,11 @@ public class ImageProcessor {
         return mc;
     }
 
-    public Matriz<Color> erosion(Matriz<Color> m,Color c, Estructura e) {
+    public Matriz<Integer> erosion(Matriz<Integer> m, Integer c, Estructura e) {
 
         var objetosResultantes = new ArrayList<ImageObject>();
 
-        ArrayList<ImageObject> objetos = m.cumulos(c, Color.CYAN);
+        ArrayList<ImageObject> objetos = m.cumulos(c, CYAN);
 
         for (ImageObject o : objetos) {
 
@@ -293,48 +377,49 @@ public class ImageProcessor {
         var mc = this.matrizFromObjetos(objetosResultantes);
         return mc;
     }
-    
-    public Matriz<Color> matrizFromObjetos(ArrayList<ImageObject> objetos){
-        var m = new Matriz<Color>(objetos.get(0).getAlto(), objetos.get(0).getAncho(), Color.WHITE);
+
+    public Matriz<Integer> matrizFromObjetos(ArrayList<ImageObject> objetos) {
+        var m = new Matriz<Integer>(objetos.get(0).getAlto(), objetos.get(0).getAncho(), WHITE);
 
         m.inicializar();
 
         ImageObject o;
         Celda c;
-        for(int i = 0; i<objetos.size(); i++){
+        for (int i = 0; i < objetos.size(); i++) {
             o = objetos.get(i);
-            for(int j = 0; j<o.getPosiciones().size(); j++){
+            for (int j = 0; j < o.getPosiciones().size(); j++) {
                 c = o.getPosiciones().get(j);
-                m.set(c.y, c.x, Color.BLACK);
+                m.set(c.y, c.x, BLACK);
             }
         }
         return m;
     }
-    
-    public Matriz<Color> getMuestra(){
+
+    public Matriz<Integer> getMuestra() {
         var m = this.matriz.getSubMatriz(muestra.filaA, muestra.columnaA, muestra.filaB, muestra.columnaB);
         return m;
     }
-    
-    public void setMuestra(int filaA, int colA, int filaB, int colB){
+
+    public void setMuestra(int filaA, int colA, int filaB, int colB) {
         this.muestra = new Muestra();
         muestra.setA(filaA, colA);
         muestra.setB(filaB, colB);
         System.out.println("Muestra = " + muestra);
     }
 
-    class Muestra{
+    class Muestra {
+
         int filaA;
         int filaB;
         int columnaA;
         int columnaB;
-        
-        public void setA(int filaA, int colA){
+
+        public void setA(int filaA, int colA) {
             this.filaA = filaA;
             this.columnaA = colA;
         }
-        
-        public void setB(int filaB, int colB){
+
+        public void setB(int filaB, int colB) {
             this.filaB = filaB;
             this.columnaB = colB;
         }

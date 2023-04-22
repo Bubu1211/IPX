@@ -2,6 +2,9 @@ package lvcr.al.imagex_2.vista;
 
 import java.io.File;
 import javax.swing.JFileChooser;
+import lvcr.al.imagex_2.ia.Cluster;
+import lvcr.al.imagex_2.ia.KMean;
+import lvcr.al.imagex_2.ia.OKMean;
 import lvcr.al.imagex_2.procesadores.ImageProcessor;
 import lvcr.al.imagex_2.procesadores.analisis.histograma.Histograma;
 import lvcr.al.imagex_2.procesadores.estructuras.Estructura;
@@ -30,23 +33,32 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPopupMenu1 = new javax.swing.JPopupMenu();
         jScrollPane1 = new javax.swing.JScrollPane();
         panel = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        menuArchivo = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        menuImagen = new javax.swing.JMenu();
         itemAbrirImagen = new javax.swing.JMenuItem();
-        itemBinarizar = new javax.swing.JMenu();
+        itemMenuBinarizar = new javax.swing.JMenu();
         itemBinarizacionEscalaGrises = new javax.swing.JMenuItem();
-        itemBinarizar1 = new javax.swing.JMenu();
-        itemBinarizacionEscalaGrises1 = new javax.swing.JMenuItem();
-        jMenu3 = new javax.swing.JMenu();
+        itemBinarizacionBw = new javax.swing.JMenuItem();
+        itemMenuOperaciones = new javax.swing.JMenu();
         itemDilatacion = new javax.swing.JMenuItem();
         itemErosion = new javax.swing.JMenuItem();
-        jMenu4 = new javax.swing.JMenu();
+        itemMenuFiltros = new javax.swing.JMenu();
+        itemFiltroAddRojo = new javax.swing.JMenuItem();
+        itemFiltroAddVerde = new javax.swing.JMenuItem();
+        itemFiltroAddAzul = new javax.swing.JMenuItem();
+        itemFiltroDeleteRojo = new javax.swing.JMenuItem();
+        itemFiltroDeleteVerde = new javax.swing.JMenuItem();
+        itemFiltroDeleteAzul = new javax.swing.JMenuItem();
+        menuTools = new javax.swing.JMenu();
         muestra = new javax.swing.JMenuItem();
         crearHistograma = new javax.swing.JMenuItem();
+        menuIa = new javax.swing.JMenu();
+        itemKmeans = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -55,7 +67,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        jMenu1.setText("Archivo");
+        menuArchivo.setText("Archivo");
 
         jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         jMenuItem1.setText("Abrir proyecto");
@@ -64,11 +76,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 jMenuItem1ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        menuArchivo.add(jMenuItem1);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(menuArchivo);
 
-        jMenu2.setText("Imagen");
+        menuImagen.setText("Imagen");
 
         itemAbrirImagen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         itemAbrirImagen.setText("Abrir Imagen");
@@ -77,9 +89,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 itemAbrirImagenActionPerformed(evt);
             }
         });
-        jMenu2.add(itemAbrirImagen);
+        menuImagen.add(itemAbrirImagen);
 
-        itemBinarizar.setText("Binarizar");
+        itemMenuBinarizar.setText("Binarizar");
 
         itemBinarizacionEscalaGrises.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         itemBinarizacionEscalaGrises.setText("Binarización escalas de grises");
@@ -88,24 +100,20 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 itemBinarizacionEscalaGrisesActionPerformed(evt);
             }
         });
-        itemBinarizar.add(itemBinarizacionEscalaGrises);
+        itemMenuBinarizar.add(itemBinarizacionEscalaGrises);
 
-        itemBinarizar1.setText("Binarizar");
-
-        itemBinarizacionEscalaGrises1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        itemBinarizacionEscalaGrises1.setText("Binarización escalas de grises");
-        itemBinarizacionEscalaGrises1.addActionListener(new java.awt.event.ActionListener() {
+        itemBinarizacionBw.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        itemBinarizacionBw.setText("Binarizar Blanco y negro");
+        itemBinarizacionBw.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                itemBinarizacionEscalaGrises1ActionPerformed(evt);
+                itemBinarizacionBwActionPerformed(evt);
             }
         });
-        itemBinarizar1.add(itemBinarizacionEscalaGrises1);
+        itemMenuBinarizar.add(itemBinarizacionBw);
 
-        itemBinarizar.add(itemBinarizar1);
+        menuImagen.add(itemMenuBinarizar);
 
-        jMenu2.add(itemBinarizar);
-
-        jMenu3.setText("Operaciones");
+        itemMenuOperaciones.setText("Operaciones");
 
         itemDilatacion.setText("Dilatar");
         itemDilatacion.addActionListener(new java.awt.event.ActionListener() {
@@ -113,7 +121,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 itemDilatacionActionPerformed(evt);
             }
         });
-        jMenu3.add(itemDilatacion);
+        itemMenuOperaciones.add(itemDilatacion);
 
         itemErosion.setText("Erosion");
         itemErosion.addActionListener(new java.awt.event.ActionListener() {
@@ -121,13 +129,70 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 itemErosionActionPerformed(evt);
             }
         });
-        jMenu3.add(itemErosion);
+        itemMenuOperaciones.add(itemErosion);
 
-        jMenu2.add(jMenu3);
+        menuImagen.add(itemMenuOperaciones);
 
-        jMenuBar1.add(jMenu2);
+        itemMenuFiltros.setText("Filtros");
 
-        jMenu4.setText("Tools");
+        itemFiltroAddRojo.setText("Agregar Rojo");
+        itemFiltroAddRojo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemFiltroAddRojoActionPerformed(evt);
+            }
+        });
+        itemMenuFiltros.add(itemFiltroAddRojo);
+
+        itemFiltroAddVerde.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        itemFiltroAddVerde.setText("Agregar Verde");
+        itemFiltroAddVerde.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemFiltroAddVerdeActionPerformed(evt);
+            }
+        });
+        itemMenuFiltros.add(itemFiltroAddVerde);
+
+        itemFiltroAddAzul.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        itemFiltroAddAzul.setText("Agregar Azul");
+        itemFiltroAddAzul.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemFiltroAddAzulActionPerformed(evt);
+            }
+        });
+        itemMenuFiltros.add(itemFiltroAddAzul);
+
+        itemFiltroDeleteRojo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        itemFiltroDeleteRojo.setText("Eliminar Rojo");
+        itemFiltroDeleteRojo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemFiltroDeleteRojoActionPerformed(evt);
+            }
+        });
+        itemMenuFiltros.add(itemFiltroDeleteRojo);
+
+        itemFiltroDeleteVerde.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        itemFiltroDeleteVerde.setText("Eliminar Verde");
+        itemFiltroDeleteVerde.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemFiltroDeleteVerdeActionPerformed(evt);
+            }
+        });
+        itemMenuFiltros.add(itemFiltroDeleteVerde);
+
+        itemFiltroDeleteAzul.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        itemFiltroDeleteAzul.setText("Eliminar Azul");
+        itemFiltroDeleteAzul.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemFiltroDeleteAzulActionPerformed(evt);
+            }
+        });
+        itemMenuFiltros.add(itemFiltroDeleteAzul);
+
+        menuImagen.add(itemMenuFiltros);
+
+        jMenuBar1.add(menuImagen);
+
+        menuTools.setText("Tools");
 
         muestra.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         muestra.setText("Seleccionar muestra");
@@ -136,7 +201,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 muestraActionPerformed(evt);
             }
         });
-        jMenu4.add(muestra);
+        menuTools.add(muestra);
 
         crearHistograma.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         crearHistograma.setText("Crear Histograma");
@@ -145,9 +210,21 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 crearHistogramaActionPerformed(evt);
             }
         });
-        jMenu4.add(crearHistograma);
+        menuTools.add(crearHistograma);
 
-        jMenuBar1.add(jMenu4);
+        jMenuBar1.add(menuTools);
+
+        menuIa.setText("IA");
+
+        itemKmeans.setText("KMeans");
+        itemKmeans.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemKmeansActionPerformed(evt);
+            }
+        });
+        menuIa.add(itemKmeans);
+
+        jMenuBar1.add(menuIa);
 
         setJMenuBar(jMenuBar1);
 
@@ -178,8 +255,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     private void itemBinarizacionEscalaGrisesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemBinarizacionEscalaGrisesActionPerformed
         // TODO add your handling code here:
-        
-        var binarizado = imageProcessor.binary_grey(121);
+        //Obtener escala de un slider 
+        var binarizado = imageProcessor.binary_grey(121, true);
         var imagenBinarizada = imageProcessor.binaryBwToImagen(binarizado);
         panelImagen.pintarImagen(imagenBinarizada);
     }//GEN-LAST:event_itemBinarizacionEscalaGrisesActionPerformed
@@ -191,7 +268,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         Thread t = new Thread(){
             @Override
             public void run(){
-                var m = imageProcessor.dilatacion(panelImagen.getMatriz(), java.awt.Color.BLACK);
+                var m = imageProcessor.dilatacion(panelImagen.getMatriz(), ImageProcessor.BLACK);
                 panelImagen.pintarImagen(m);
             }
         };
@@ -205,7 +282,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         Thread t = new Thread(){
             @Override
             public void run(){
-                var m = imageProcessor.erosion(panelImagen.getMatriz(), java.awt.Color.BLACK, Estructura.VECINO_4);
+                var m = imageProcessor.erosion(panelImagen.getMatriz(), ImageProcessor.BLACK, Estructura.VECINO_4);
                 panelImagen.pintarImagen(m);
             }
         };
@@ -232,9 +309,58 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         histograma.runView();
     }//GEN-LAST:event_crearHistogramaActionPerformed
 
-    private void itemBinarizacionEscalaGrises1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemBinarizacionEscalaGrises1ActionPerformed
+    private void itemBinarizacionBwActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemBinarizacionBwActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_itemBinarizacionEscalaGrises1ActionPerformed
+    }//GEN-LAST:event_itemBinarizacionBwActionPerformed
+
+    private void itemFiltroAddRojoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemFiltroAddRojoActionPerformed
+        // TODO add your handling code here:
+        panelImagen.pintarImagen(imageProcessor.filterAddRed());
+        System.out.println("Filtro Azul");
+    }//GEN-LAST:event_itemFiltroAddRojoActionPerformed
+
+    private void itemFiltroAddVerdeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemFiltroAddVerdeActionPerformed
+        // TODO add your handling code here:
+        panelImagen.pintarImagen(imageProcessor.filterAddGreen());
+        System.out.println("Filtro Azul");
+    }//GEN-LAST:event_itemFiltroAddVerdeActionPerformed
+
+    private void itemFiltroAddAzulActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemFiltroAddAzulActionPerformed
+        // TODO add your handling code here:
+        panelImagen.pintarImagen(imageProcessor.filterAddBlue());
+        System.out.println("Filtro Azul");
+    }//GEN-LAST:event_itemFiltroAddAzulActionPerformed
+
+    private void itemFiltroDeleteRojoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemFiltroDeleteRojoActionPerformed
+        panelImagen.pintarImagen(imageProcessor.deleteRed());
+        System.out.println("Filtro Azul");
+    }//GEN-LAST:event_itemFiltroDeleteRojoActionPerformed
+
+    private void itemFiltroDeleteVerdeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemFiltroDeleteVerdeActionPerformed
+        // TODO add your handling code here:
+        panelImagen.pintarImagen(imageProcessor.deleteGreen());
+        System.out.println("Filtro Azul");
+    }//GEN-LAST:event_itemFiltroDeleteVerdeActionPerformed
+
+    private void itemFiltroDeleteAzulActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemFiltroDeleteAzulActionPerformed
+        // TODO add your handling code here:
+        panelImagen.pintarImagen(imageProcessor.deleteBlue());
+        System.out.println("Filtro Azul");
+    }//GEN-LAST:event_itemFiltroDeleteAzulActionPerformed
+
+    private void itemKmeansActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemKmeansActionPerformed
+        // TODO add your handling code here:
+        //KMeans 
+        KMean k = new KMean();
+        Integer[] c = {ImageProcessor.BLACK, ImageProcessor.WHITE};
+        k.kmeanSupervisado(KMean.SUPERVISADO, imageProcessor.getMatriz(), c );
+        for (Cluster clu : k.clusters) {
+            System.out.println("Centroide: "+clu.centroide);
+            for(OKMean ok : clu.cluster){
+                o
+            }
+        }
+    }//GEN-LAST:event_itemKmeansActionPerformed
 
     /**
      * @param args the command line arguments
@@ -273,19 +399,28 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem crearHistograma;
     private javax.swing.JMenuItem itemAbrirImagen;
+    private javax.swing.JMenuItem itemBinarizacionBw;
     private javax.swing.JMenuItem itemBinarizacionEscalaGrises;
-    private javax.swing.JMenuItem itemBinarizacionEscalaGrises1;
-    private javax.swing.JMenu itemBinarizar;
-    private javax.swing.JMenu itemBinarizar1;
     private javax.swing.JMenuItem itemDilatacion;
     private javax.swing.JMenuItem itemErosion;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenuItem itemFiltroAddAzul;
+    private javax.swing.JMenuItem itemFiltroAddRojo;
+    private javax.swing.JMenuItem itemFiltroAddVerde;
+    private javax.swing.JMenuItem itemFiltroDeleteAzul;
+    private javax.swing.JMenuItem itemFiltroDeleteRojo;
+    private javax.swing.JMenuItem itemFiltroDeleteVerde;
+    private javax.swing.JMenuItem itemKmeans;
+    private javax.swing.JMenu itemMenuBinarizar;
+    private javax.swing.JMenu itemMenuFiltros;
+    private javax.swing.JMenu itemMenuOperaciones;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenu menuArchivo;
+    private javax.swing.JMenu menuIa;
+    private javax.swing.JMenu menuImagen;
+    private javax.swing.JMenu menuTools;
     private javax.swing.JMenuItem muestra;
     private javax.swing.JPanel panel;
     // End of variables declaration//GEN-END:variables

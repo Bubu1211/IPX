@@ -12,9 +12,9 @@ public class Matriz <T>{
     
     private int filas;
     private int columnas;
-    private Object a[][];
+    public Object a[][];
     private String id;
-    private T inicial;
+    protected T inicial;
 //    private TipoMatriz tipo;
     private static int id_char = 63;
     private Matriz<T> matrizCumulos;

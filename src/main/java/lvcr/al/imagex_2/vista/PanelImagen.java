@@ -17,7 +17,7 @@ public final class PanelImagen extends JPanel {
     private int escala;
     private int width;
     private int height;
-    private Matriz<Color> matriz;
+    private Matriz<Integer> matriz;
     private JPanel contenedor;
     int n = 0;
     private Point pointA;
@@ -50,7 +50,7 @@ public final class PanelImagen extends JPanel {
         this.setMuestra = b;
     }
 
-    public void pintarImagen(Matriz<Color> m) {
+    public void pintarImagen(Matriz<Integer> m) {
         this.matriz = m;
         repaint();
     }
@@ -59,7 +59,7 @@ public final class PanelImagen extends JPanel {
         repaint();
     }
 
-    public Matriz<Color> getMatriz() {
+    public Matriz<Integer> getMatriz() {
         return this.matriz;
     }
 
@@ -91,7 +91,7 @@ public final class PanelImagen extends JPanel {
                             //codigo de prueba
 
                             //fin codifo de prueba
-                            gc.setColor(matriz.get(f, c));
+                            gc.setColor(new Color(matriz.get(f, c)));
                             gc.fillRect(posX, posY, escala, escala);
 
                             posX += escala;
